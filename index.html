@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>14 Aug Surprise — Countdown</title>
+  <style>
+    :root{--green:#0b8a3e;--white:#fff}
+    html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(#f6fff6,#ffffff)}
+    .wrap{display:flex;align-items:center;justify-content:center;height:100%;padding:20px}
+    .card{width:100%;max-width:820px;padding:28px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,0.08);background:var(--white);text-align:center}
+    h1{color:var(--green);margin:0 0 6px;font-size:26px}
+    .countbig{font-size:42px;color:#111;margin:18px 0;font-weight:700}
+    .small{color:#444}
+    .hidden{display:none}
+    .final-msg{font-size:36px;color:var(--green);font-weight:800;margin-top:8px}
+    .wait{margin-top:10px;font-size:18px;color:#555}
+    /* confetti simple */
+    .confetti{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Open this link — Countdown to 14 Aug 🇵🇰</h1>
+
+      <div id="before">
+        <div class="small">Reveal happens at <strong>14 August 2025 (Pakistan Time)</strong></div>
+        <div class="countbig" id="countdown">loading…</div>
+        <div class="small">Share this QR image — when the QR is scanned the countdown will appear here.</div>
+      </div>
+
+      <div id="after" class="hidden">
+        <div class="final-msg" id="finalText">Jashn-e-Azadi Mubarak 🇵🇰</div>
+        <div class="wait" id="waitDots">wait</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === EDIT ONLY THIS LINE for reveal time (Pakistan time) ===
+    const revealDate = new Date('2025-08-14T12:00:00+05:00');
+    // ==============================================================
+
+    const before = document.getElementById('before');
+    const after = document.getElementById('after');
+    const cd = document.getElementById('countdown');
+    const waitDots = document.getElementById('waitDots');
+
+    // helper to pad
+    function pad(n){ return n<10 ? '0'+n : n; }
+
+    // animate "wait...." dots
+    let dots = 0;
+    setInterval(()=> {
+      if (!after.classList.contains('hidden')) {
+        dots = (dots + 1) % 4;
+        waitDots.textContent = 'wait' + '.'.repeat(dots);
+      }
+    }, 500);
+
+    function showFinal(){
+      before.classList.add('hidden');
+      after.classList.remove('hidden');
+      // optional small confetti burst:
+      triggerConfetti();
+    }
+
+    function update(){
+      const now = new Date();
+      let diff = revealDate - now;
+      if (diff <= 0) {
+        showFinal();
+        clearInterval(loop);
+        cd.textContent = 'Unlocked!';
+        return;
+      }
+      const s = Math.floor(diff/1000)%60;
+      const m = Math.floor(diff/60000)%60;
+      const h = Math.floor(diff/3600000)%24;
+      const d = Math.floor(diff/86400000);
+      cd.textContent = `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+    }
+
+    update();
+    const loop = setInterval(update, 1000);
+
+    // tiny confetti function (simple rectangles)
+    function triggerConfetti(){
+      const conf = document.createElement('div');
+      conf.className = 'confetti';
+      document.body.appendChild(conf);
+      const colors = ['#0b8a3e','#ffffff','#0b8a3e','#e6f9ea'];
+      for(let i=0;i<60;i++){
+        const el = document.createElement('div');
+        el.style.position='absolute';
+        el.style.width = (6+Math.random()*8)+'px';
+        el.style.height = (10+Math.random()*20)+'px';
+        el.style.left = (Math.random()*100)+'%';
+        el.style.top = '-10%';
+        el.style.background = colors[Math.floor(Math.random()*colors.length)];
+        el.style.opacity = Math.random()*0.9+0.3;
+        el.style.transform = 'rotate('+Math.random()*360+'deg)';
+        el.style.borderRadius='2px';
+        el.style.transition = 'transform 2.5s linear, top 2.5s ease-in';
+        conf.appendChild(el);
+        setTimeout(()=> {
+          el.style.top = (60+Math.random()*30)+'%';
+          el.style.transform = 'translateY(20px) rotate('+Math.random()*360+'deg)';
+        }, 10 + i*10);
+      }
+      // remove after 4s
+      setTimeout(()=> conf.remove(), 4200);
+    }
+  </script>
+</body>
+</html>
